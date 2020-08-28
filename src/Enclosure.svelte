@@ -1,10 +1,13 @@
 <script>
+  import { onMount } from "svelte";
+
   export let animalEmoji;
   export let foodEmoji;
 
-  let foodPositions = [[100, 200], [300, 150]];
-  let animalX = 50;
-  let animalY = 50;
+  let foodPositions = [];
+  let animalX = 0;
+  let animalY = 0;
+  let domNode;
 
   $: animalStyle = `
     left: ${animalX}px;
@@ -18,10 +21,20 @@
     `;
   }
 
+  function clamp(num, min, max) {
+    return Math.min(Math.max(num, min), max);
+  }
+
   function giveMoreFood(event) {
     let { clientX, clientY } = event;
     let rect = event.target.getBoundingClientRect();
-    foodPositions.push([clientX - rect.x, clientY - rect.y]);
+    let x = clientX - rect.x - 18;
+    let y = clientY - rect.y - 8;
+
+    foodPositions.push([
+      clamp(x, 0, rect.width - 36),
+      clamp(y, 0, rect.height - 36)
+    ]);
     foodPositions = foodPositions;
   }
 
@@ -60,6 +73,25 @@
     animalY += dy;
   }
 
+  function randomNumber(min, max) {
+    return min + Math.random() * (max - min);
+  }
+
+  function randomPosition(rect, emojiSize) {
+    return [
+      randomNumber(0, rect.width - emojiSize),
+      randomNumber(0, rect.height - emojiSize)
+    ];
+  }
+
+  function initalize() {
+    let rect = domNode.getBoundingClientRect();
+    [animalX, animalY] = randomPosition(rect, 36);
+    foodPositions = [0, 0, 0].map(() => randomPosition(rect, 24));
+  }
+
+  onMount(initalize);
+
   setInterval(moveAnimal, 1000 / 60);
 </script>
 
@@ -84,7 +116,11 @@
   }
 </style>
 
-<div class="enclosure" on:click={giveMoreFood} style={cursorCSS()}>
+<div
+  class="enclosure"
+  on:click={giveMoreFood}
+  style={cursorCSS()}
+  bind:this={domNode}>
   <span style={animalStyle} class="animal">{animalEmoji}</span>
   {#each foodPositions as food}
     <span style={foodStyle(food)} class="food">{foodEmoji}</span>
