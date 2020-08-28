@@ -3,15 +3,13 @@
   export let foodEmoji;
 
   let foodPositions = [[100, 200], [300, 150]];
-  let animalPosition = [50, 50];
+  let animalX = 50;
+  let animalY = 50;
 
-  function animalStyle() {
-    let [x, y] = animalPosition;
-    return `
-      left: ${x}px;
-      top: ${y}px;
-    `;
-  }
+  $: animalStyle = `
+    left: ${animalX}px;
+    top: ${animalY}px;
+  `;
 
   function foodStyle([x, y]) {
     return `
@@ -30,6 +28,39 @@
   function cursorCSS() {
     return `cursor:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'  width='40' height='48' viewport='0 0 100 100' style='fill:black;font-size:24px;'><text y='50%'>${foodEmoji}</text></svg>") 16 0,auto;`;
   }
+
+  function distanceTo([x, y]) {
+    return Math.sqrt((x - animalX) ** 2 + (y - animalY) ** 2);
+  }
+
+  function findClosestFood() {
+    return [...foodPositions].sort((a, b) => distanceTo(a) - distanceTo(b))[0];
+  }
+
+  function eatFood(foodX, foodY) {
+    foodPositions = foodPositions.filter(([x, y]) => {
+      return !(x === foodX && y === foodY);
+    });
+  }
+
+  function moveAnimal() {
+    if (!foodPositions.length) return;
+    let [foodX, foodY] = findClosestFood();
+    let dx = foodX - animalX;
+    let dy = foodY - animalY;
+    let d = Math.sqrt(dx ** 2 + dy ** 2);
+    if (d > 1) {
+      dx /= d;
+      dy /= d;
+    }
+    if (d === 0) {
+      eatFood(foodX, foodY);
+    }
+    animalX += dx;
+    animalY += dy;
+  }
+
+  setInterval(moveAnimal, 1000 / 60);
 </script>
 
 <style>
@@ -42,7 +73,7 @@
     position: relative;
   }
   .animal {
-    font-size: 36px;
+    font-size: 50px;
     position: absolute;
     pointer-events: none;
   }
@@ -53,12 +84,8 @@
   }
 </style>
 
-<div
-  class="enclosure"
-  on:click={giveMoreFood}
-  style={cursorCSS()}
-  >
-  <span style={animalStyle()} class="animal">{animalEmoji}</span>
+<div class="enclosure" on:click={giveMoreFood} style={cursorCSS()}>
+  <span style={animalStyle} class="animal">{animalEmoji}</span>
   {#each foodPositions as food}
     <span style={foodStyle(food)} class="food">{foodEmoji}</span>
   {/each}
