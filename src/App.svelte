@@ -13,11 +13,11 @@
 </style>
 
 <div class="zoo">
-  <Enclosure animalEmoji="🐧" foodEmoji="🍭" />
+  <Enclosure animalEmoji="🐧" foodEmojis={['🍭', '🍫', '🍦']} />
 
-  <Enclosure animalEmoji="🐼" foodEmoji="🍬" />
+  <Enclosure animalEmoji="🐼" foodEmojis={['🍬', '🍪', '🧁']} />
 
-  <Enclosure animalEmoji="🐯" foodEmoji="🍧" />
+  <Enclosure animalEmoji="🐯" foodEmojis={['🍰', '🥠', '🎂']} />
 
-  <Enclosure animalEmoji="🐄" foodEmoji="🍨" />
+  <Enclosure animalEmoji="🐮" foodEmojis={['🍨', '🍩', '🍡']} />
 </div>

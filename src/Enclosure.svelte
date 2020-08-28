@@ -2,8 +2,9 @@
   import { onMount } from "svelte";
 
   export let animalEmoji;
-  export let foodEmoji;
+  export let foodEmojis;
 
+  let mouseFoodEmoji = foodEmojis[0];
   let foodPositions = [];
   let animalX = 0;
   let animalY = 0;
@@ -26,6 +27,10 @@
     return Math.min(Math.max(num, min), max);
   }
 
+  function randomElement(array) {
+    return array[Math.floor(Math.random() * array.length)];
+  }
+
   function giveMoreFood(event) {
     let { clientX, clientY } = event;
     let rect = event.target.getBoundingClientRect();
@@ -34,14 +39,14 @@
 
     foodPositions.push([
       clamp(x, 0, rect.width - 36),
-      clamp(y, 0, rect.height - 36)
+      clamp(y, 0, rect.height - 36),
+      mouseFoodEmoji
     ]);
+    mouseFoodEmoji = randomElement(foodEmojis);
     foodPositions = foodPositions;
   }
 
-  function cursorCSS() {
-    return `cursor:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'  width='40' height='48' viewport='0 0 100 100' style='fill:black;font-size:24px;'><text y='50%'>${foodEmoji}</text></svg>") 16 0,auto;`;
-  }
+  $: cursorCSS = `cursor:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'  width='40' height='48' viewport='0 0 100 100' style='fill:black;font-size:24px;'><text y='50%'>${mouseFoodEmoji}</text></svg>") 16 0,auto;`;
 
   function distanceTo([x, y]) {
     return Math.sqrt((x - animalX) ** 2 + (y - animalY) ** 2);
@@ -87,10 +92,17 @@
     ];
   }
 
+  function randomFood() {
+    return randomElement(foodEmojis);
+  }
+
   function initalize() {
     let rect = domNode.getBoundingClientRect();
     [animalX, animalY] = randomPosition(rect, 36);
-    foodPositions = [0, 0, 0].map(() => randomPosition(rect, 24));
+    foodPositions = [0, 0, 0].map(() => [
+      ...randomPosition(rect, 24),
+      randomFood()
+    ]);
   }
 
   onMount(initalize);
@@ -134,10 +146,10 @@
 <div
   class="enclosure"
   on:click={giveMoreFood}
-  style={cursorCSS()}
+  style={cursorCSS}
   bind:this={domNode}>
   <span style={animalStyle} class:happy class="animal">{animalEmoji}</span>
   {#each foodPositions as food}
-    <span style={foodStyle(food)} class="food">{foodEmoji}</span>
+    <span style={foodStyle(food)} class="food">{food[2]}</span>
   {/each}
 </div>
