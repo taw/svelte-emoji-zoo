@@ -8,6 +8,7 @@
   let animalX = 0;
   let animalY = 0;
   let domNode;
+  let happy = false;
 
   $: animalStyle = `
     left: ${animalX}px;
@@ -68,6 +69,8 @@
     }
     if (d === 0) {
       eatFood(foodX, foodY);
+      happy = true;
+      setTimeout(() => (happy = false), 1000);
     }
     animalX += dx;
     animalY += dy;
@@ -99,8 +102,8 @@
   .enclosure {
     background-color: #afc;
     margin: 1em;
-    height: 40vh;
-    width: 40vw;
+    height: 45vh;
+    width: 45vw;
     margin: auto;
     position: relative;
   }
@@ -108,6 +111,18 @@
     font-size: 50px;
     position: absolute;
     pointer-events: none;
+  }
+  .animal::after {
+    position: absolute;
+    right: -6px;
+    top: 0;
+    content: "💖";
+    font-size: 16px;
+    opacity: 0;
+    transition: opacity 0.5s;
+  }
+  .animal.happy::after {
+    opacity: 1;
   }
   .food {
     font-size: 36px;
@@ -121,7 +136,7 @@
   on:click={giveMoreFood}
   style={cursorCSS()}
   bind:this={domNode}>
-  <span style={animalStyle} class="animal">{animalEmoji}</span>
+  <span style={animalStyle} class:happy class="animal">{animalEmoji}</span>
   {#each foodPositions as food}
     <span style={foodStyle(food)} class="food">{foodEmoji}</span>
   {/each}
