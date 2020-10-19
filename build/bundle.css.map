@@ -2,8 +2,8 @@
   "version": 3,
   "file": "bundle.css",
   "sources": [
-    "../../App.svelte",
-    "../../Enclosure.svelte"
+    "App.svelte",
+    "Enclosure.svelte"
   ],
   "sourcesContent": [
     "<script>\n  import Enclosure from \"./Enclosure.svelte\";\n</script>\n\n<style>\n  .zoo {\n    display: grid;\n    grid-template-rows: 1fr 1fr;\n    grid-template-columns: 1fr 1fr;\n    height: 100vh;\n    width: 100wh;\n  }\n</style>\n\n<div class=\"zoo\">\n  <Enclosure animalEmoji=\"🐧\" foodEmojis={['🍭', '🍫', '🍦']} />\n\n  <Enclosure animalEmoji=\"🐼\" foodEmojis={['🍬', '🍪', '🧁']} />\n\n  <Enclosure animalEmoji=\"🐯\" foodEmojis={['🍰', '🥠', '🎂']} />\n\n  <Enclosure animalEmoji=\"🐮\" foodEmojis={['🍨', '🍩', '🍡']} />\n</div>\n",
